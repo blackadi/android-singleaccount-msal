@@ -13,6 +13,7 @@ import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
@@ -86,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
         myWebView = (WebView) findViewById(R.id.webview);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        CookieManager.getInstance().setAcceptCookie(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView,true);
-        }else{
-            CookieManager.getInstance().setAcceptCookie(true);
+            CookieManager.getInstance().acceptThirdPartyCookies(myWebView);
         }
 
 
@@ -99,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                CookieManager.getInstance().setAcceptCookie(true);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView,true);
+                    CookieManager.getInstance().acceptThirdPartyCookies(myWebView);
+                }
                 mSingleAccountApp.signIn(MainActivity.this, null, scopes, getAuthInteractiveCallback());
             }
         });
@@ -113,6 +119,20 @@ public class MainActivity extends AppCompatActivity {
                 /**
                  * Removes the signed-in account and cached tokens from this app (or device, if the device is in shared mode).
                  */
+
+                // clear webview
+                WebStorage.getInstance().deleteAllData();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    CookieManager.getInstance().removeSessionCookies(null);
+                    CookieManager.getInstance().removeAllCookies(null);
+                    CookieManager.getInstance().flush();
+                }
+                myWebView.clearCache(true);
+                myWebView.clearFormData();
+                myWebView.clearHistory();
+                myWebView.clearSslPreferences();
+                myWebView.loadUrl("about:blank");
+
                 mSingleAccountApp.signOut(new ISingleAccountPublicClientApplication.SignOutCallback() {
                     @Override
                     public void onSignOut() {
@@ -298,9 +318,9 @@ public class MainActivity extends AppCompatActivity {
             currentUserTextView.setText(mAccount.getUsername());
 
             //Webview
-            CookieSyncManager.getInstance().startSync();
+            //CookieSyncManager.getInstance().startSync();
 //            Toast.makeText(this, CookieManager.getInstance().hasCookies() ? "YES" : "NO", Toast.LENGTH_LONG).show();
-            myWebView.loadUrl("https://web.microsoftstream.com/embed/video/30d528d8-f4fd-4a3e-89ea-5941072d2f1e?autoplay=false&showinfo=true");
+            myWebView.loadUrl("https://web.microsoftstream.com/embed/video/30d528d8-f4fd-4a3e-89ea-5941072d2f1e");
 
             // Test via web browser not android native webview, also change the authorization_user_agent to "BROWSER"
 //                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://web.microsoftstream.com/embed/video/30d528d8-f4fd-4a3e-89ea-5941072d2f1e"));
