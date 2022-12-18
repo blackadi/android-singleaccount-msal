@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         signOutButton = (Button) findViewById(R.id.btn_removeAccount);
         logTextView = (TextView) findViewById(R.id.txt_log);
         currentUserTextView = (TextView) findViewById(R.id.current_user);
+
         myWebView = (WebView) findViewById(R.id.webview);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -93,18 +94,17 @@ public class MainActivity extends AppCompatActivity {
             CookieManager.getInstance().acceptThirdPartyCookies(myWebView);
         }
 
-
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (mSingleAccountApp == null) {
                     return;
                 }
 
-                CookieManager.getInstance().setAcceptCookie(true);
+                /*CookieManager.getInstance().setAcceptCookie(true);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     CookieManager.getInstance().setAcceptThirdPartyCookies(myWebView,true);
                     CookieManager.getInstance().acceptThirdPartyCookies(myWebView);
-                }
+                }*/
                 mSingleAccountApp.signIn(MainActivity.this, null, scopes, getAuthInteractiveCallback());
             }
         });
@@ -125,12 +125,11 @@ public class MainActivity extends AppCompatActivity {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     CookieManager.getInstance().removeSessionCookies(null);
                     CookieManager.getInstance().removeAllCookies(null);
-                    CookieManager.getInstance().flush();
                 }
-                myWebView.clearCache(true);
+/*                myWebView.clearCache(true);
                 myWebView.clearFormData();
                 myWebView.clearHistory();
-                myWebView.clearSslPreferences();
+                myWebView.clearSslPreferences();*/
                 myWebView.loadUrl("about:blank");
 
                 mSingleAccountApp.signOut(new ISingleAccountPublicClientApplication.SignOutCallback() {
