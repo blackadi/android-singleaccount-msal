@@ -65,5 +65,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_removeAccount" />
 
+    <Button
+        android:id="@+id/btn_customTab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Open Custom Tab"
+        app:layout_constraintBottom_toTopOf="@+id/btn_signIn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_log" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

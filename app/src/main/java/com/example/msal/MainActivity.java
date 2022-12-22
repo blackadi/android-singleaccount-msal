@@ -1,6 +1,7 @@
 package com.example.msal;
 
 
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button signInButton;
     Button signOutButton;
+    Button openCustomTabButton;
     TextView logTextView;
     TextView currentUserTextView;
     WebView myWebView;
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     /* Azure AD Variables */
     private ISingleAccountPublicClientApplication mSingleAccountApp;
     private IAccount mAccount;
-    private String[] scopes = {"openid", "profile"};
+    private String[] scopes = {"https://stream.microsoft.com/access_microsoftstream_embed"};
     final private String defaultGraphResourceUrl = MSGraphRequestWrapper.MS_GRAPH_ROOT_ENDPOINT + "v1.0/me";
 
     @Override
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private void initializeUI() {
         signInButton = (Button) findViewById(R.id.btn_signIn);
         signOutButton = (Button) findViewById(R.id.btn_removeAccount);
+        openCustomTabButton = (Button) findViewById(R.id.btn_customTab);
         logTextView = (TextView) findViewById(R.id.txt_log);
         currentUserTextView = (TextView) findViewById(R.id.current_user);
 
@@ -100,6 +104,16 @@ public class MainActivity extends AppCompatActivity {
                     CookieManager.getInstance().acceptThirdPartyCookies(myWebView);
                 }*/
                 mSingleAccountApp.signIn(MainActivity.this, null, scopes, getAuthInteractiveCallback());
+            }
+        });
+
+        openCustomTabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String url = "https://web.microsoftstream.com/embed/video/30d528d8-f4fd-4a3e-89ea-5941072d2f1e";
+                CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+                CustomTabsIntent customTabsIntent = builder.build();
+                customTabsIntent.launchUrl(getApplicationContext(), Uri.parse(url));
             }
         });
 
@@ -198,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Successfully authenticated");
 
                 /* Successfully got a token, use it to call a protected resource - MSGraph */
-                callGraphAPI(authenticationResult);
+                callGraphAPI (authenticationResult);
             }
 
             @Override
@@ -240,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
                 updateUI();
 
                 /* call graph */
-                callGraphAPI(authenticationResult);
+                //callGraphAPI(authenticationResult);
 
             }
 
@@ -308,6 +322,7 @@ public class MainActivity extends AppCompatActivity {
         if (mAccount != null) {
             signInButton.setEnabled(false);
             signOutButton.setEnabled(true);
+            openCustomTabButton.setEnabled(true);
             currentUserTextView.setText(mAccount.getUsername());
 
             //Webview
@@ -322,6 +337,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             signInButton.setEnabled(true);
             signOutButton.setEnabled(false);
+            openCustomTabButton.setEnabled(false);
             currentUserTextView.setText("None");
         }
         String isSharedDevice = mSingleAccountApp.isSharedDevice() ? "Yes" : "No";
